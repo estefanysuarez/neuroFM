@@ -37,6 +37,13 @@ def test_resolve_architecture_aliases():
     assert resolve_architecture("biot").needs_positions is False
     assert resolve_architecture("reve").needs_positions is True
     assert resolve_architecture("Deep4Net").class_name == "Deep4Net"
+    assert resolve_architecture("labram").default_pretrained == "braindecode/labram-pretrained"
+    assert resolve_architecture("SignalJEPA").sfreq == 128.0
+    assert resolve_architecture("cbramod").class_name == "CBraMod"
+    assert resolve_architecture("luna").default_pretrained == "PulpBio/LUNA"
+    assert resolve_architecture("eegpt").sfreq == 250.0
+    assert resolve_architecture("bendr").class_name == "BENDR"
+    assert resolve_architecture("codebrain").sfreq == 200.0
 
 
 def test_pretrained_overrides_keep_checkpoint_geometry():
@@ -119,4 +126,97 @@ def test_neuralbench_biot_forward():
     )
     logits = model({"signal": torch.randn(2, 4, 256)})
     assert logits.shape == (2, 2)
+    # BIOT itself accepts any channel count; interpolation is only for
+    # checkpoints (and the other fixed montages) that reject n_chans.
+    assert type(model.model).__name__ == "BIOT"
+
+
+def test_neuralbench_labram_interpolates_noncanonical_channels():
+    pytest.importorskip("braindecode")
+    with pytest.warns(UserWarning, match="InterpolatedLaBraM"):
+        model = NeuralBenchWrapper(
+            architecture="Labram",
+            n_chans=4,
+            n_times=200,
+            n_outputs=2,
+            kwargs={
+                "patch_size": 200,
+                "embed_dim": 32,
+                "num_layers": 1,
+                "num_heads": 2,
+            },
+        )
+    assert type(model.model).__name__ == "InterpolatedLaBraM"
+    assert model.n_chans == 4
+    logits = model({"signal": torch.randn(2, 4, 200)})
+    assert logits.shape == (2, 2)
+
+
+def test_neuralbench_signaljepa_interpolates_noncanonical_channels():
+    pytest.importorskip("braindecode")
+    with pytest.warns(UserWarning, match="InterpolatedSignalJEPA"):
+        model = NeuralBenchWrapper(
+            architecture="SignalJEPA",
+            n_chans=4,
+            n_times=256,
+            n_outputs=2,
+            sfreq=128.0,
+            kwargs={
+                "transformer__num_encoder_layers": 1,
+                "transformer__num_decoder_layers": 1,
+            },
+        )
+    assert type(model.model).__name__ == "InterpolatedSignalJEPA"
+    assert model.n_chans == 4
+    features = model({"signal": torch.randn(2, 4, 256)})
+    assert features.ndim == 3
+    assert features.shape[0] == 2
+
+
+def test_neuralbench_signaljepa_pretrained_interpolates_noncanonical_channels():
+    pytest.importorskip("braindecode")
+    with pytest.warns(UserWarning, match="InterpolatedSignalJEPA"):
+        model = NeuralBenchWrapper(
+            architecture="SignalJEPA",
+            n_chans=4,
+            n_times=256,
+            n_outputs=None,
+            sfreq=128.0,
+            from_pretrained="braindecode/signal-jepa",
+        )
+    assert type(model.model).__name__ == "InterpolatedSignalJEPA"
+    assert model.n_chans == 4
+    features = model({"signal": torch.randn(2, 4, 256)})
+    assert features.ndim == 3
+    assert features.shape[0] == 2
+
+
+def test_neuralbench_biot_pretrained_interpolates_noncanonical_channels():
+    pytest.importorskip("braindecode")
+    with pytest.warns(UserWarning, match="InterpolatedBIOT"):
+        model = NeuralBenchWrapper(
+            architecture="BIOT",
+            n_chans=4,
+            n_times=1000,
+            n_outputs=2,
+            sfreq=200.0,
+            from_pretrained="braindecode/biot-pretrained-six-datasets-18chs",
+        )
+    assert type(model.model).__name__ == "InterpolatedBIOT"
+    assert model.n_chans == 4
+    logits = model({"signal": torch.randn(2, 4, 1000)})
+    assert logits.shape == (2, 2)
+
+
+def test_neuralbench_biot_pretrained_rejects_noncheckpoint_sfreq():
+    pytest.importorskip("braindecode")
+    with pytest.raises(RuntimeError, match="sampling rate"):
+        NeuralBenchWrapper(
+            architecture="BIOT",
+            n_chans=4,
+            n_times=1000,
+            n_outputs=2,
+            sfreq=256.0,
+            from_pretrained="braindecode/biot-pretrained-six-datasets-18chs",
+        )
 

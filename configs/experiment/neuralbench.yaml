@@ -6,7 +6,13 @@ objective: classify
 
 defaults:
   - override /data: synthetic
-  - override /model: nb_reve
+  - override /model: nb_biot
+
+model:
+  n_chans: 4
+  n_outputs: 2
+  sfreq: 200
+  from_pretrained: true
 
 data:
   temporal_transforms: [bandpass]
