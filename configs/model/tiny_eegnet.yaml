@@ -1,0 +1,4 @@
+name: tiny_eegnet
+n_chans: 4
+n_times: 1024
+n_outputs: 2

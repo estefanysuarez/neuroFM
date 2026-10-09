@@ -1,0 +1,7 @@
+# NeuralBench EEGNet (task-specific, trained from scratch)
+name: neuralbench
+architecture: EEGNet
+n_chans: 4
+n_times: 1024
+n_outputs: 2
+from_pretrained: false

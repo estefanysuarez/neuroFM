@@ -1,0 +1,16 @@
+# neuroFM experiment configuration
+
+name: "default_experiment"
+output_dir: "outputs"
+seed: 42
+
+mode: "experiment"  # or "official"
+handoff: "neurofm"  # or "package"
+objective: "classify"  # or "regress"
+
+defaults:
+  - _self_
+  - data: synthetic
+  - model: tiny_eegnet
+  - training: default
+  - optional experiment: null

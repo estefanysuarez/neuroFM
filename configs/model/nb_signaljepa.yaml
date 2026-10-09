@@ -1,0 +1,12 @@
+# NeuralBench SignalJEPA
+# Pretrained checkpoint: braindecode/signal-jepa
+# https://braindecode.org/stable/auto_examples/model_building/plot_load_pretrained_models.html
+# 62 pretraining channels. The checkpoint leaves n_times and n_outputs unset
+# (length-agnostic encoder, no classification head) and stores sfreq 128.
+name: neuralbench
+architecture: SignalJEPA
+n_chans: 62
+n_times: null
+n_outputs: null
+sfreq: 128
+from_pretrained: braindecode/signal-jepa

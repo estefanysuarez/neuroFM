@@ -1,0 +1,17 @@
+# @package _global_
+name: neuralbench
+mode: experiment
+handoff: neurofm
+objective: classify
+
+defaults:
+  - override /data: synthetic
+  - override /model: nb_reve
+
+data:
+  temporal_transforms: [bandpass]
+
+training:
+  n_epochs: 2
+  batch_size: 4
+  learning_rate: 0.0001

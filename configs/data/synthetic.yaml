@@ -1,0 +1,10 @@
+source: synthetic
+
+spatial_transforms: []
+window: fixed
+temporal_transforms: [bandpass]
+target: binary
+split: predefined
+window_transforms: []
+augmentations: [noise]
+tokenizer: null

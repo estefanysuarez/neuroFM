@@ -1,0 +1,10 @@
+# NeuralBench CBraMod
+# Pretrained checkpoint: braindecode/cbramod-pretrained
+# https://braindecode.org/stable/auto_examples/model_building/plot_load_pretrained_models.html
+name: neuralbench
+architecture: CBraMod
+n_chans: 22
+n_times: 1000
+n_outputs: 2
+sfreq: 250
+from_pretrained: braindecode/cbramod-pretrained

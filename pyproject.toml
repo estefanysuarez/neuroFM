@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurofm"
+version = "0.1.0"
+description = "A flexible hub for neuroscience foundation-model experiments."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "torch",
+    "lightning",
+    "torchmetrics",
+    "hydra-core",
+    "numpy",
+    "scipy",
+]
+
+[project.optional-dependencies]
+braindecode = ["braindecode"]
+hub = ["braindecode[hub]"]
+neuralbench = ["neuralbench==0.2.3", "neuralfetch==0.2.3", "moabb>=1.5.0"]
+eegfm = []
+dev = ["pre-commit>=4.5.1", "pytest>=8.0.0", "ruff==0.15.22"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

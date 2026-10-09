@@ -1,0 +1,11 @@
+# NeuralBench Labram
+# Pretrained checkpoint: braindecode/labram-pretrained
+# https://braindecode.org/stable/auto_examples/model_building/plot_load_pretrained_models.html
+# The checkpoint stores n_outputs: 0 (no classification head) and leaves sfreq unset.
+name: neuralbench
+architecture: Labram
+n_chans: 128
+n_times: 3000
+n_outputs: 0
+sfreq: null
+from_pretrained: braindecode/labram-pretrained

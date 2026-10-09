@@ -1,0 +1,10 @@
+# NeuralBench BENDR
+# Pretrained checkpoint: braindecode/braindecode-bendr
+# https://braindecode.org/stable/auto_examples/model_building/plot_load_pretrained_models.html
+name: neuralbench
+architecture: BENDR
+n_chans: 20
+n_times: 1000
+n_outputs: 2
+sfreq: 250
+from_pretrained: braindecode/braindecode-bendr

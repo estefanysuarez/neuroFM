@@ -1,0 +1,11 @@
+# NeuralBench EEGPT
+# Pretrained checkpoint: braindecode/eegpt-pretrained
+# https://braindecode.org/stable/auto_examples/model_building/plot_load_pretrained_models.html
+name: neuralbench
+architecture: EEGPT
+n_chans: 62
+n_times: 1000
+n_outputs: 1
+sfreq: 250
+chan_proj_type: "none"
+from_pretrained: braindecode/eegpt-pretrained

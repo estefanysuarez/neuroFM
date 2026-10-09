@@ -1,0 +1,18 @@
+# NeuralBench LUNA (base)
+# Pretrained checkpoint: PulpBio/LUNA, file LUNA_base.safetensors
+# https://braindecode.org/stable/auto_examples/model_building/plot_load_pretrained_models.html
+# Large and huge use the same n_chans, n_times, and n_outputs.
+# The page does not set sfreq.
+#   large: filename LUNA_large.safetensors, embed_dim 96, num_queries 6, depth 10
+#   huge:  filename LUNA_huge.safetensors,  embed_dim 128, num_queries 8, depth 24
+name: neuralbench
+architecture: LUNA
+n_chans: 22
+n_times: 1000
+n_outputs: 2
+sfreq: null
+filename: LUNA_base.safetensors
+embed_dim: 64
+num_queries: 4
+depth: 8
+from_pretrained: PulpBio/LUNA

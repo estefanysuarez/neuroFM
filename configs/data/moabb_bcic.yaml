@@ -1,0 +1,5 @@
+# configs/data/source/moabb_bcic.yaml
+source: moabb
+source_params:
+  dataset_name: "BNCI2014_001"
+  subject_ids: [1, 2, 3]

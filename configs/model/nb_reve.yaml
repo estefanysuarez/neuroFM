@@ -1,0 +1,11 @@
+# NeuralBench REVE foundation model
+# Pretrained checkpoint: brain-bzh/reve-base
+# https://braindecode.org/stable/auto_examples/model_building/plot_load_pretrained_models.html
+# reve-large uses the same n_chans, n_times, n_outputs, and sfreq.
+name: neuralbench
+architecture: REVE
+n_chans: 64
+n_times: 512
+n_outputs: 2
+sfreq: 256
+from_pretrained: brain-bzh/reve-base

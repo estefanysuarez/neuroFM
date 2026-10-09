@@ -1,0 +1,11 @@
+# NeuralBench BIOT
+# Pretrained checkpoint: braindecode/biot-pretrained-six-datasets-18chs
+# https://braindecode.org/stable/auto_examples/model_building/plot_load_pretrained_models.html
+# The same page also lists 16-channel PREST and 18-channel SHHS+PREST checkpoints.
+name: neuralbench
+architecture: BIOT
+n_chans: 18
+n_times: 1000
+n_outputs: 2
+sfreq: 200
+from_pretrained: braindecode/biot-pretrained-six-datasets-18chs

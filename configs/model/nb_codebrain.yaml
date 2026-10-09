@@ -1,0 +1,11 @@
+# NeuralBench CodeBrain
+# Pretrained checkpoint: braindecode/codebrain-pretrained
+# https://braindecode.org/stable/auto_examples/model_building/plot_load_pretrained_models.html
+# 19 channels, 10-20 montage, 200 Hz. n_times is 30 s at that rate.
+name: neuralbench
+architecture: CodeBrain
+n_chans: 19
+n_times: 6000
+n_outputs: 2
+sfreq: 200
+from_pretrained: braindecode/codebrain-pretrained
