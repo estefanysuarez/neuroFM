@@ -3,13 +3,9 @@
 import pytest
 import torch
 
-from neurofm.data.augmentations import GaussianNoise  # noqa: F401
-from neurofm.data.collate import tensor_collate  # noqa: F401
+import neurofm.plugins  # noqa: F401
+
 from neurofm.data.pipeline import Pipeline
-from neurofm.data.sources import SyntheticSource  # noqa: F401
-from neurofm.data.splits import PredefinedSplit  # noqa: F401
-from neurofm.data.targets import BinaryTarget  # noqa: F401
-from neurofm.data.transforms import AlignChannels, BandpassFilter, Resample  # noqa: F401
 from neurofm.models.adapters import InputAdapters
 from neurofm.models.custom import TinyEEGNet
 from neurofm.training.datamodule import NeuroFMDataModule
