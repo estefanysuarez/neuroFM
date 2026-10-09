@@ -186,6 +186,18 @@ class NeuroFMDataModule(LightningDataModule):
         self.dataset_n_chans: Dict[str, int] = {}
         self._ready = False
 
+    @property
+    def n_chans(self) -> Optional[int]:
+        """Channel count of the union layout after setup; None in adapter mode."""
+        if self.channel_layout != "union" or self.resolved_ch_names is None:
+            return None
+        return len(self.resolved_ch_names)
+
+    def set_collate(self, name: str) -> None:
+        """Bind the collate the model contract selected."""
+        self._collate_name = name
+        self.collate_fn = collates_registry.get(name)
+
     def setup(self, stage: str = None):
         """Load and preprocess data."""
         if self._ready:

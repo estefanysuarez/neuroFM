@@ -32,6 +32,18 @@ def _to_container(value):
     return value
 
 
+def _expected_sfreq(model_cls, model_params: dict):
+    """Sampling rate the model expects, without constructing it."""
+    if model_params.get("sfreq") is not None:
+        return model_params["sfreq"]
+    architecture = model_params.get("architecture")
+    if architecture:
+        from neurofm.models.external.neuralbench import resolve_architecture
+        return resolve_architecture(architecture).sfreq
+    expects = getattr(getattr(model_cls, "input_contract", None), "expects", None)
+    return getattr(expects, "sfreq", None)
+
+
 def _pipeline_from_cfg(cfg) -> Pipeline:
     source_params = _to_container(cfg.get("source_params")) or {}
     return Pipeline(
@@ -88,11 +100,33 @@ def main(cfg: DictConfig):
         channel_layout=channel_layout,
         align_ch_names=align_ch_names,
     )
-    
-    # Build model
+
     model_params = OmegaConf.to_container(cfg.model, resolve=True)
     model_name = model_params.pop("name")
     model_cls = models_registry.get(model_name)
+
+    # Discover the union montage before building the model, so n_chans can
+    # match that length. Sampling-rate checks use the configured sfreq.
+    datamodule.expected_sfreq = _expected_sfreq(model_cls, model_params)
+    datamodule.setup()
+
+    if channel_layout == "union":
+        n_chans = datamodule.n_chans
+        if n_chans is None:
+            raise RuntimeError("Union layout did not resolve a channel list.")
+        configured = model_params.get("n_chans")
+        if configured is not None and int(configured) != n_chans:
+            print(
+                f"Overriding model.n_chans={configured} with union length "
+                f"{n_chans}: {datamodule.resolved_ch_names}"
+            )
+        else:
+            print(
+                f"Set model.n_chans={n_chans} from union "
+                f"{datamodule.resolved_ch_names}"
+            )
+        model_params["n_chans"] = n_chans
+
     model = model_cls(**model_params)
     print(f"Loaded model {model_name}, model has: \
           \n{model.n_chans} channels, \
@@ -101,11 +135,8 @@ def main(cfg: DictConfig):
           \n{model.sfreq} Hz sampling rate, \
           \n{model.chs_info} channels info"
         )
-    
-    # Setup DataModule after the model contract chooses the collate
-    datamodule.expected_sfreq = model.sfreq
-    datamodule._collate_name = model.input_contract.collate
-    datamodule.setup()
+
+    datamodule.set_collate(model.input_contract.collate)
 
     if channel_layout == "adapter":
         model = InputAdapters(model, datamodule.dataset_n_chans)
@@ -140,7 +171,10 @@ def main(cfg: DictConfig):
             "torch": torch.__version__,
         },
         pipeline_config=OmegaConf.to_container(pipeline_cfg),
-        model_config=OmegaConf.to_container(cfg.model),
+        model_config={
+            **OmegaConf.to_container(cfg.model),
+            "n_chans": model.n_chans,
+        },
         objective=cfg.get("objective", "classify"),
         mode=cfg.get("mode", "experiment"),
         handoff=cfg.get("handoff", "neurofm"),

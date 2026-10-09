@@ -76,6 +76,10 @@ def test_union_layout_zero_fills_and_respects_split_params():
     batch = next(iter(datamodule.train_dataloader()))
     assert batch["signal"].shape[1:] == (5, 1024)
     assert batch["channel_mask"].shape[1] == 5
+    assert datamodule.n_chans == 5
+    model = TinyEEGNet(n_chans=datamodule.n_chans, n_times=1024, n_outputs=2)
+    logits = model(batch)
+    assert logits.shape == (batch["signal"].shape[0], 2)
 
 
 def test_union_align_ch_names_drops_channels_outside_the_list():
@@ -87,6 +91,7 @@ def test_union_align_ch_names_drops_channels_outside_the_list():
     )
     datamodule.setup()
     assert datamodule.resolved_ch_names == ["C3", "Cz", "C4"]
+    assert datamodule.n_chans == 3
     a_window = datamodule.train_groups[0][0]
     b_window = datamodule.train_groups[1][0]
     assert a_window.signal.shape[0] == 3
@@ -102,6 +107,7 @@ def test_adapter_keeps_native_shapes_and_single_dataset_batches():
     )
     datamodule.setup()
     assert datamodule.dataset_n_chans == {"ds_a": 3, "ds_b": 3}
+    assert datamodule.n_chans is None
     assert datamodule.train_groups[0][0].signal.shape[0] == 3
     assert datamodule.train_groups[1][0].signal.shape[0] == 3
 

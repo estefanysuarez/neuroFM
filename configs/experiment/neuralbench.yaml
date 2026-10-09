@@ -9,16 +9,11 @@ defaults:
   - override /model: nb_biot
 
 model:
-  n_chans: 4
   n_outputs: 2
-  sfreq: 200
   from_pretrained: true
 
 data:
-  # source_params:
-  #   sfreq: 200
-  # temporal_transforms: [bandpass]
-
+  channel_layout: union # adapter
   datasets:
     - source: moabb
       source_params:
