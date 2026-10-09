@@ -8,3 +8,5 @@ outputs/
 *.pth
 *.ckpt
 cache/
+
+.env
