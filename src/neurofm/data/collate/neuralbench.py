@@ -2,6 +2,7 @@
 
 import torch
 from neurofm.registry import register
+from neurofm.data.collate.fields import add_channel_fields, add_dataset_field
 
 
 @register("collates", "neuralbench")
@@ -31,10 +32,6 @@ def neuralbench_collate(windows: list) -> dict:
         "y": torch.tensor(targets, dtype=torch.long),
         "subject_ids": subject_ids,
     }
-    
-    # Add channel positions if available
-    if windows[0].ch_positions is not None:
-        ch_positions = torch.from_numpy(windows[0].ch_positions).float()
-        batch["ch_positions"] = ch_positions
-    
+    add_channel_fields(batch, windows)
+    add_dataset_field(batch, windows)
     return batch

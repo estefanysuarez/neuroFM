@@ -15,7 +15,39 @@ model:
   from_pretrained: true
 
 data:
-  temporal_transforms: [bandpass]
+  # source_params:
+  #   sfreq: 200
+  # temporal_transforms: [bandpass]
+
+  datasets:
+    - source: moabb
+      source_params:
+        dataset_name: BNCI2014_001
+        subject_ids: [1]
+      channel_map: {T3: T7, T4: T8}
+      temporal_transforms:
+        - name: resample
+          sfreq: 200
+        - name: bandpass
+          l_freq: 0.5
+          h_freq: 40
+      target: binary
+      split: predefined
+      split_params:
+        train_ratio: 0.6
+        val_ratio: 0.2
+      augmentations: [noise]
+    - source: synthetic
+      source_params:
+        n_channels: 8
+      temporal_transforms:
+        - name: resample
+          sfreq: 200
+        - bandpass
+      split_params:
+        train_ratio: 0.8
+        val_ratio: 0.1
+      augmentations: []
 
 training:
   n_epochs: 2

@@ -2,6 +2,7 @@
 
 import torch
 from neurofm.registry import register
+from neurofm.data.collate.fields import add_channel_fields, add_dataset_field
 
 
 @register("collates", "tensor")
@@ -25,6 +26,6 @@ def tensor_collate(windows: list) -> dict:
         "signal": torch.stack(signals),  # (batch, n_chans, n_times)
         "target": torch.tensor(targets, dtype=torch.long),
     }
-    if windows[0].ch_positions is not None:
-        batch["ch_positions"] = torch.from_numpy(windows[0].ch_positions).float()
+    add_channel_fields(batch, windows)
+    add_dataset_field(batch, windows)
     return batch
